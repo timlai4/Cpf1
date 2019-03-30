@@ -39,8 +39,35 @@ test_single_encode = pd.get_dummies(test_single_nucleotides)
 train_di_encode = pd.get_dummies(train_dinucleotides)
 test_di_encode = pd.get_dummies(test_dinucleotides)
 
-train_labels= pd.concat([train_single_encode, train_di_encode], axis = 1)
-test_labels = pd.concat([test_single_encode, test_di_encode], axis = 1)
+train_single_counts = pd.DataFrame()
+test_single_counts = pd.DataFrame()
+A_cols = []
+C_cols = []
+G_cols = []
+T_cols = []
+for i in range(34):
+  A_cols.append(str(i) + "_A")
+  C_cols.append(str(i) + "_C")  
+  G_cols.append(str(i) + "_G")
+  T_cols.append(str(i) + "_T")
+  
+del A_cols[4:7] # Training set does not have A's in these positions.
+del C_cols[4:7]
+del G_cols[4:7]
+
+train_single_counts['A'] = (train_single_encode[A_cols].sum(axis=1))/34
+train_single_counts['C'] = (train_single_encode[C_cols].sum(axis=1))/34
+train_single_counts['G'] = (train_single_encode[G_cols].sum(axis=1))/34
+train_single_counts['T'] = (train_single_encode[T_cols].sum(axis=1))/34
+
+test_single_counts['A'] = (test_single_encode[A_cols].sum(axis=1))/34
+test_single_counts['C'] = (test_single_encode[C_cols].sum(axis=1))/34
+test_single_counts['G'] = (test_single_encode[G_cols].sum(axis=1))/34
+test_single_counts['T'] = (test_single_encode[T_cols].sum(axis=1))/34
+
+train_labels= pd.concat([train_single_encode, train_di_encode,train_single_counts], axis = 1)
+test_labels = pd.concat([test_single_encode, test_di_encode,test_single_counts], axis = 1)
+
 # Free up some memory
 del train_single_nucleotides
 del test_single_nucleotides
